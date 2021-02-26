@@ -9,6 +9,7 @@ function App() {
     <Router>
       <div className="App">
         <Route exact path="/" component={Login} />
+        <h1>Hello</h1>
       </div>
     </Router>
   );
