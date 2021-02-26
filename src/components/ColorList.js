@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 // import axios from "axios";
 import { axiosWithAuth } from '../helpers/axiosWithAuth';
-import { useParams, useHistory } from 'react-router-dom';
 import EditMenu from './EditMenu';
 
 const initialColor = {
@@ -13,9 +12,6 @@ const ColorList = ({ colors, updateColors }) => {
   const [editing, setEditing] = useState(false);
   const [colorToEdit, setColorToEdit] = useState(initialColor);
 
-  const { id } = useParams(); 
-  const { push } = useHistory();
-
   const editColor = color => {
     setEditing(true);
     setColorToEdit(color);
@@ -24,34 +20,30 @@ const ColorList = ({ colors, updateColors }) => {
   const saveEdit = e => {
     e.preventDefault();
     axiosWithAuth()
-    .put(`api/colors/${colorToEdit.id}`, colorToEdit)
+    .put(`api/colors/:${colorToEdit.id}`, colorToEdit)
     .then((res) => {
       console.log(res)
       const newColor = colors.map((color) => {
-        if(String(color.id) === String(id)){
-          return res.data
+        if(color.id === colorToEdit.id){
+          return colorToEdit
         } else{
           return color
         }
       })
       updateColors(newColor)
-      push('/bubbles')
+     
     })
     .catch((err) => {
       console.log(err)
     })
   };
 
-
   const deleteColor = color => {
     axiosWithAuth()
     .delete(`/api/colors/${color.id}`)
     .then((res) => {
       console.log(res)
-      updateColors([
-        ...colors.filter((newColor) => newColor.id !== res.data)
-      ])
-      push('/bubbles')
+      updateColors(colors.filter((newColor) => newColor.id !== res.data))
     })
     .catch((err) => {
       console.log(err)
